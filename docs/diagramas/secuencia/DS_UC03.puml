@@ -1,0 +1,53 @@
+@startuml UC08_Secuencia
+actor UsuarioFinal
+boundary VistaCredencial
+control VisualizarCredencialControl
+entity Credencial
+entity Sesion
+
+UsuarioFinal -> VistaCredencial : seleccionarCredencial(id)
+activate VistaCredencial
+VistaCredencial -> VisualizarCredencialControl : solicitarDatos(id)
+activate VisualizarCredencialControl
+
+VisualizarCredencialControl -> Credencial : extraerBlobCifradoLocal(id)
+activate Credencial
+Credencial --> VisualizarCredencialControl : blobCifrado
+deactivate Credencial
+
+VisualizarCredencialControl -> Sesion : obtenerLlaveActivaRAM()
+activate Sesion
+
+alt llave corrupta en RAM (E1)
+    Sesion --> VisualizarCredencialControl : llaveInvalida
+    VisualizarCredencialControl --> VistaCredencial : forzarCierreSesion()
+    VistaCredencial --> UsuarioFinal : solicita re-login
+else llave válida
+    Sesion --> VisualizarCredencialControl : llaveActiva
+    deactivate Sesion
+
+    VisualizarCredencialControl -> VisualizarCredencialControl : descifrar(blobCifrado, llaveActiva)
+    VisualizarCredencialControl --> VistaCredencial : datos(usuario, claveOculta)
+    VistaCredencial --> UsuarioFinal : muestra usuario y clave tras asteriscos
+
+    UsuarioFinal -> VistaCredencial : pulsarOjoOCopiar()
+
+    opt re-autenticación configurada (A1)
+        VistaCredencial -> VisualizarCredencialControl : solicitarReautenticacion()
+        VisualizarCredencialControl --> VistaCredencial : requiereBiometria()
+        VistaCredencial --> UsuarioFinal : solicita huella/FaceID
+        UsuarioFinal -> VistaCredencial : confirmaBiometria()
+    end
+
+    VistaCredencial -> VisualizarCredencialControl : revelarOCopiar(id)
+    VisualizarCredencialControl --> VistaCredencial : claveEnClaro
+    VistaCredencial --> UsuarioFinal : revela clave / copia al portapapeles
+
+    VisualizarCredencialControl -> VisualizarCredencialControl : programarBorradoPortapapeles(30s)
+end
+
+deactivate VisualizarCredencialControl
+deactivate VistaCredencial
+@enduml
+
+

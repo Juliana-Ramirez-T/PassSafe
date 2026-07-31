@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}PassSafe{% endblock %}
+{% block content %}
+<div class="home-hero">
+  <div class="hero-copy">
+    <span class="eyebrow">SEGURIDAD DE NIVEL BANCARIO</span>
+    <h1>Tus contraseñas. <span>Seguras.</span> Siempre.</h1>
+    <p>Genera, almacena y accede a tus credenciales desde cualquier dispositivo con cifrado de punto a punto. La bóveda digital que nunca descansa.</p>
+    <div class="hero-actions">
+      <a href="{% url 'accounts:register' %}" class="button primary">Empezar Gratis</a>
+      <a href="{% url 'accounts:login' %}" class="button secondary">Iniciar Sesión</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-card-header">
+      <span>Mi Bóveda</span>
+      <div class="status-badge">2FA Habilitado</div>
+    </div>
+    <div class="hero-card-item">
+      <div>
+        <strong>Facebook</strong>
+        <p>user_secure_88</p>
+      </div>
+      <span class="tag success">STRONG</span>
+    </div>
+    <div class="hero-card-item">
+      <div>
+        <strong>Work Database</strong>
+        <p>admin_vault</p>
+      </div>
+      <span class="tag secondary">••••••••••</span>
+    </div>
+    <div class="hero-card-item">
+      <div>
+        <strong>Netflix</strong>
+        <p>family_stream</p>
+      </div>
+      <span class="tag danger">WEAK</span>
+    </div>
+    <div class="strength-meter">
+      <span>Fortaleza de Contraseña</span>
+      <div class="meter"><div style="width: 84%"></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

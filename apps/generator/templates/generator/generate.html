@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Generador{% endblock %}
+{% block content %}
+<div class="generator-page">
+  <div class="generator-card">
+    <h1>Generar Contraseña Segura</h1>
+    <p class="subtitle">Crea contraseñas robustas o una frase Diceware rápida y segura.</p>
+    <form id="generator-form" method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="form-grid">
+        <div class="field">
+          {{ form.length.label_tag }}
+          {{ form.length }}
+          {{ form.length.errors }}
+        </div>
+        <div class="field checkbox-field">
+          {{ form.use_uppercase }} {{ form.use_uppercase.label_tag }}
+        </div>
+        <div class="field checkbox-field">
+          {{ form.use_lowercase }} {{ form.use_lowercase.label_tag }}
+        </div>
+        <div class="field checkbox-field">
+          {{ form.use_numbers }} {{ form.use_numbers.label_tag }}
+        </div>
+        <div class="field checkbox-field">
+          {{ form.use_symbols }} {{ form.use_symbols.label_tag }}
+        </div>
+        <div class="field checkbox-field">
+          {{ form.use_diceware }} {{ form.use_diceware.label_tag }}
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="button primary" type="submit">Generar</button>
+        <button class="button secondary" type="button" id="refresh-password">Generar dinámico</button>
+      </div>
+    </form>
+
+    <div class="generated-result" id="generated-result" {% if not generated %}style="display:none;"{% endif %}>
+      <p class="small-label">Contraseña sugerida</p>
+      <div class="generated-box">
+        <span id="generated-value">{{ generated }}</span>
+        <button class="button tertiary" id="copy-generated" type="button">Copiar</button>
+      </div>
+      <div class="strength-bar">
+        <span>Fortaleza</span>
+        <div class="bar"><div id="strength-value" style="width: {{ strength }}%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const generateUrl = '{% url "generator:api_generate" %}';
+  const refreshButton = document.getElementById('refresh-password');
+  const generatorForm = document.getElementById('generator-form');
+  const generatedResult = document.getElementById('generated-result');
+  const generatedValue = document.getElementById('generated-value');
+  const strengthBar = document.getElementById('strength-value');
+  const copyButton = document.getElementById('copy-generated');
+
+  if (refreshButton) {
+    refreshButton.addEventListener('click', async () => {
+      const formData = new FormData(generatorForm);
+      const response = await fetch(generateUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+      if (!response.ok) {
+        return;
+      }
+      const data = await response.json();
+      generatedResult.style.display = 'block';
+      generatedValue.textContent = data.password;
+      strengthBar.style.width = data.strength + '%';
+    });
+  }
+
+  if (copyButton) {
+    copyButton.addEventListener('click', async () => {
+      const text = generatedValue.textContent.trim();
+      if (!text) return;
+      await navigator.clipboard.writeText(text);
+      alert('Contraseña copiada al portapapeles');
+    });
+  }
+</script>
+{% endblock %}

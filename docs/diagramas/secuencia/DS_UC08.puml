@@ -1,0 +1,46 @@
+@startuml UC13_Secuencia
+actor Administrador
+boundary PanelGestionUsuarios
+control GestionUsuariosControl
+entity Usuario as UsuarioEntity
+entity Sesion
+
+Administrador -> PanelGestionUsuarios : buscarUsuario(idOCorreo)
+activate PanelGestionUsuarios
+PanelGestionUsuarios -> GestionUsuariosControl : consultarUsuario(idOCorreo)
+activate GestionUsuariosControl
+
+GestionUsuariosControl -> UsuarioEntity : obtener(idOCorreo)
+activate UsuarioEntity
+UsuarioEntity --> GestionUsuariosControl : datosUsuario
+deactivate UsuarioEntity
+
+GestionUsuariosControl --> PanelGestionUsuarios : resultado(datosUsuario)
+PanelGestionUsuarios --> Administrador : muestra usuario encontrado
+
+Administrador -> PanelGestionUsuarios : seleccionarSuspenderCuenta(usuarioId)
+PanelGestionUsuarios -> GestionUsuariosControl : suspenderCuenta(usuarioId, adminId)
+
+GestionUsuariosControl -> GestionUsuariosControl : validarNoAutoSuspension(usuarioId, adminId)
+
+alt intento de auto-suspensión (E1)
+    GestionUsuariosControl --> PanelGestionUsuarios : accionBloqueada()
+    PanelGestionUsuarios --> Administrador : muestra error de auto-suspensión
+else suspensión válida
+    GestionUsuariosControl -> UsuarioEntity : actualizarEstado(usuarioId, "Suspendido")
+    activate UsuarioEntity
+    UsuarioEntity --> GestionUsuariosControl : estadoActualizado
+    deactivate UsuarioEntity
+
+    GestionUsuariosControl -> Sesion : revocarTokensActivos(usuarioId)
+    activate Sesion
+    Sesion --> GestionUsuariosControl : tokensRevocados
+    deactivate Sesion
+
+    GestionUsuariosControl --> PanelGestionUsuarios : suspensionConfirmada()
+    PanelGestionUsuarios --> Administrador : muestra confirmación
+end
+
+deactivate GestionUsuariosControl
+deactivate PanelGestionUsuarios
+@enduml

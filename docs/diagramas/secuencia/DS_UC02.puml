@@ -1,0 +1,48 @@
+@startuml UC09_Secuencia
+actor UsuarioFinal
+boundary FormularioEdicionCredencial
+control GeneradorContrasenaControl
+control EditarCredencialControl
+entity HistorialCredencial
+entity Credencial
+
+UsuarioFinal -> FormularioEdicionCredencial : seleccionarEditar(id)
+activate FormularioEdicionCredencial
+UsuarioFinal -> FormularioEdicionCredencial : modificarCampos(datosNuevos)
+
+opt usa generador (extend UC-06)
+    FormularioEdicionCredencial -> GeneradorContrasenaControl : generar(longitud, tiposCaracteres)
+    activate GeneradorContrasenaControl
+    GeneradorContrasenaControl --> FormularioEdicionCredencial : contrasenaGenerada
+    deactivate GeneradorContrasenaControl
+end
+
+FormularioEdicionCredencial -> EditarCredencialControl : guardarCambios(id, datosNuevos)
+activate EditarCredencialControl
+
+EditarCredencialControl -> HistorialCredencial : archivarVersionAnterior(id, claveAnteriorCifrada)
+activate HistorialCredencial
+HistorialCredencial --> EditarCredencialControl : historialActualizado(maxVersiones=5)
+deactivate HistorialCredencial
+
+EditarCredencialControl -> EditarCredencialControl : generarNuevoIV()
+EditarCredencialControl -> EditarCredencialControl : cifrarNuevoJSON(datosNuevos, nuevoIV)
+
+EditarCredencialControl -> Credencial : actualizar(id, blobCifrado, nuevoIV)
+activate Credencial
+
+alt conflicto de sincronización (E1)
+    Credencial --> EditarCredencialControl : conflictoDetectado(timestampServidor)
+    EditarCredencialControl -> EditarCredencialControl : aplicarPoliticaResolucion()
+    EditarCredencialControl --> FormularioEdicionCredencial : conflictoResuelto(detalle)
+else actualización exitosa
+    Credencial --> EditarCredencialControl : actualizado(timestampNuevo)
+    EditarCredencialControl --> FormularioEdicionCredencial : cambiosGuardados()
+end
+deactivate Credencial
+
+FormularioEdicionCredencial --> UsuarioFinal : muestra resultado
+
+deactivate EditarCredencialControl
+deactivate FormularioEdicionCredencial
+@enduml

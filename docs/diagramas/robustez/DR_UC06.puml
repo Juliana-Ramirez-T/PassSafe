@@ -1,0 +1,23 @@
+@startuml UC09_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary FormularioEdicionCredencial
+control EditarCredencialControl
+control GeneradorContrasenaControl
+entity Credencial
+entity HistorialCredencial
+
+UsuarioFinal --> FormularioEdicionCredencial : selecciona "Editar" y modifica campos
+FormularioEdicionCredencial --> GeneradorContrasenaControl : <<extend>> genera nueva contraseña (opcional)
+
+FormularioEdicionCredencial --> EditarCredencialControl : solicita guardar cambios
+
+EditarCredencialControl --> HistorialCredencial : archiva contraseña anterior cifrada
+EditarCredencialControl --> EditarCredencialControl : genera nuevo IV
+EditarCredencialControl --> EditarCredencialControl : cifra nuevo JSON
+EditarCredencialControl --> Credencial : PUT al servidor central
+
+EditarCredencialControl --> FormularioEdicionCredencial : confirma actualización / conflicto
+FormularioEdicionCredencial --> UsuarioFinal : muestra resultado
+@enduml

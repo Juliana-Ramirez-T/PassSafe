@@ -1,0 +1,55 @@
+@startuml UC05_Secuencia
+actor UsuarioFinal
+boundary FormularioRecuperacion
+control RecuperacionAccesoControl
+entity KitEmergencia
+entity Usuario as UsuarioEntity
+entity Credencial
+
+UsuarioFinal -> FormularioRecuperacion : ingresar(correo, claveRecuperacion)
+activate FormularioRecuperacion
+FormularioRecuperacion -> RecuperacionAccesoControl : iniciarRecuperacion(correo, claveRecuperacion)
+activate RecuperacionAccesoControl
+
+RecuperacionAccesoControl -> KitEmergencia : validarIntegridad(claveRecuperacion)
+activate KitEmergencia
+KitEmergencia --> RecuperacionAccesoControl : valida (booleano)
+deactivate KitEmergencia
+
+alt clave de recuperación incorrecta (E1)
+    RecuperacionAccesoControl --> FormularioRecuperacion : accesoDenegado()
+    FormularioRecuperacion --> UsuarioFinal : acceso denegado de forma absoluta
+else clave válida
+    RecuperacionAccesoControl --> FormularioRecuperacion : solicitarNuevaClave()
+    FormularioRecuperacion --> UsuarioFinal : pide nueva contraseña maestra
+    UsuarioFinal -> FormularioRecuperacion : definirNuevaClave(nuevaClaveMaestra)
+    FormularioRecuperacion -> RecuperacionAccesoControl : procesarNuevaClave(nuevaClaveMaestra)
+
+    RecuperacionAccesoControl -> Credencial : descargarBlobCifradoAntiguo()
+    activate Credencial
+    Credencial --> RecuperacionAccesoControl : blobCifradoAntiguo
+    deactivate Credencial
+
+    RecuperacionAccesoControl -> RecuperacionAccesoControl : descifrar(blobCifradoAntiguo, claveRecuperacion)
+    RecuperacionAccesoControl -> RecuperacionAccesoControl : reCifrar(bovedaPlano, nuevaClaveMaestra)
+
+    RecuperacionAccesoControl -> Credencial : subirBovedaReCifrada(blobNuevo)
+    activate Credencial
+    Credencial --> RecuperacionAccesoControl : bovedaActualizada
+    deactivate Credencial
+
+    RecuperacionAccesoControl -> UsuarioEntity : actualizarHashAutenticacion(nuevaClaveMaestra)
+    activate UsuarioEntity
+    UsuarioEntity --> RecuperacionAccesoControl : hashActualizado
+    deactivate UsuarioEntity
+
+    RecuperacionAccesoControl --> FormularioRecuperacion : recuperacionExitosa()
+    FormularioRecuperacion --> UsuarioFinal : notifica éxito
+end
+
+deactivate RecuperacionAccesoControl
+deactivate FormularioRecuperacion
+@enduml
+
+
+

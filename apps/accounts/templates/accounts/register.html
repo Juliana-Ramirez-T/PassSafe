@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Crear Cuenta{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Crea tu Bóveda</h1>
+    <p class="subtitle">Seguridad de nivel militar en tus manos.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="form-grid">
+        <div class="field">
+          {{ form.username.label_tag }}
+          {{ form.username }}
+          {{ form.username.errors }}
+        </div>
+        <div class="field">
+          {{ form.email.label_tag }}
+          {{ form.email }}
+          {{ form.email.errors }}
+        </div>
+      </div>
+      <div class="field">
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+        {{ form.password1.errors }}
+      </div>
+      <div class="field">
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+        {{ form.password2.errors }}
+      </div>
+      <button class="button primary" type="submit">Crear Cuenta</button>
+      <p class="small-text">¿Ya tienes una cuenta? <a href="{% url 'accounts:login' %}">Inicia sesión</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}

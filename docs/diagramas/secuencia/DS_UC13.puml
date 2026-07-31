@@ -1,0 +1,41 @@
+@startuml UC04_Secuencia
+actor Usuario
+boundary BotonCerrarSesion
+control CierreSesionControl
+entity Sesion
+
+alt cierre manual
+    Usuario -> BotonCerrarSesion : cerrarSesion()
+else inactividad prolongada (A1)
+    BotonCerrarSesion -> BotonCerrarSesion : detectarInactividad(15min)
+end
+activate BotonCerrarSesion
+
+BotonCerrarSesion -> CierreSesionControl : ejecutarCierre()
+activate CierreSesionControl
+
+CierreSesionControl -> Sesion : purgarLlaveEnRAM()
+activate Sesion
+Sesion --> CierreSesionControl : memoriaPurgada
+deactivate Sesion
+
+CierreSesionControl -> Sesion : invalidarTokenEnServidor()
+activate Sesion
+alt pérdida de red (E1)
+    Sesion --> CierreSesionControl : sinConexion
+    CierreSesionControl -> Sesion : destruirDatosLocales()
+else conexión disponible
+    Sesion --> CierreSesionControl : tokenInvalidado
+end
+deactivate Sesion
+
+CierreSesionControl --> BotonCerrarSesion : cierreCompletado()
+BotonCerrarSesion --> Usuario : redirige a pantalla de login
+
+deactivate CierreSesionControl
+deactivate BotonCerrarSesion
+@enduml
+
+
+
+

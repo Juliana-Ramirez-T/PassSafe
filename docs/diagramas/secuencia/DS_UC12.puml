@@ -1,0 +1,72 @@
+@startuml UC02_Secuencia
+actor Usuario
+boundary FormularioLogin
+control LoginControl
+control ValidacionCredencialesControl
+entity Usuario as UsuarioEntity
+entity Sesion
+
+Usuario -> FormularioLogin : ingresar(correo, claveMaestra)
+activate FormularioLogin
+FormularioLogin -> LoginControl : iniciarSesion(correo, claveMaestra)
+activate LoginControl
+
+LoginControl -> UsuarioEntity : obtenerSalt(correo)
+activate UsuarioEntity
+UsuarioEntity --> LoginControl : salt
+deactivate UsuarioEntity
+
+LoginControl -> LoginControl : calcularHashAutenticacion(claveMaestra, salt)
+
+LoginControl -> ValidacionCredencialesControl : validar(correo, hashAutenticacion)
+activate ValidacionCredencialesControl
+note right of ValidacionCredencialesControl
+  <<include>> UC-03: Validar Credenciales
+  (ver diagrama de secuencia UC-03)
+end note
+ValidacionCredencialesControl --> LoginControl : resultado(aprobado/rechazado)
+deactivate ValidacionCredencialesControl
+
+alt credenciales inválidas (E1)
+    LoginControl -> UsuarioEntity : incrementarContadorFallos()
+    activate UsuarioEntity
+    UsuarioEntity --> LoginControl : intentosActuales
+    deactivate UsuarioEntity
+    opt intentosActuales >= 5 (E2)
+        LoginControl -> UsuarioEntity : bloquearCuentaTemporalmente()
+        activate UsuarioEntity
+        UsuarioEntity --> LoginControl : cuentaBloqueada
+        deactivate UsuarioEntity
+        LoginControl --> FormularioLogin : cuentaBloqueada()
+        FormularioLogin --> Usuario : muestra bloqueo temporal
+    end
+    LoginControl --> FormularioLogin : credencialesInvalidas()
+    FormularioLogin --> Usuario : muestra error de autenticación
+else credenciales válidas
+    LoginControl -> UsuarioEntity : reiniciarContadorFallos()
+    activate UsuarioEntity
+    UsuarioEntity --> LoginControl : ok
+    deactivate UsuarioEntity
+
+    LoginControl -> Sesion : crear(usuarioId, jwt)
+    activate Sesion
+    Sesion --> LoginControl : sesionActiva
+    deactivate Sesion
+
+    LoginControl -> Sesion : cargarLlaveMaestraEnRAM(claveMaestra)
+    activate Sesion
+    Sesion --> LoginControl : llaveCargada
+    deactivate Sesion
+
+    LoginControl --> FormularioLogin : sesionIniciada(jwt)
+    FormularioLogin --> Usuario : muestra bóveda descifrada
+end
+
+deactivate LoginControl
+deactivate FormularioLogin
+@enduml
+
+
+
+
+

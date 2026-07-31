@@ -1,0 +1,20 @@
+@startuml UC03_Robustez
+left to right direction
+control LoginControl as "LoginControl (UC-02, actor invocante)"
+control ValidacionCredencialesControl
+boundary InterfazMotorCifrado
+entity Usuario as UsuarioEntity
+actor MotorCifrado
+
+' Nota ICONIX: al no existir actor humano ni boundary propio,
+' el control invocante de UC-02 actúa como "actor" de este caso incluido.
+LoginControl --> ValidacionCredencialesControl : invoca validar(hashAutenticacion)
+
+ValidacionCredencialesControl --> UsuarioEntity : recupera hash de control almacenado
+ValidacionCredencialesControl --> InterfazMotorCifrado : solicita comparación segura
+InterfazMotorCifrado --> MotorCifrado : delega comparación en tiempo constante
+MotorCifrado --> InterfazMotorCifrado : resultado de comparación
+InterfazMotorCifrado --> ValidacionCredencialesControl : coincide / no coincide
+
+ValidacionCredencialesControl --> LoginControl : autoriza / rechaza generación de token
+@enduml

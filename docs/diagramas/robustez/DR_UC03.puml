@@ -1,0 +1,23 @@
+@startuml UC07_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary FormularioCredencial
+control AgregarCredencialControl
+control GeneradorContrasenaControl
+entity Credencial
+entity Sesion
+
+UsuarioFinal --> FormularioCredencial : completa título, URL, usuario, contraseña
+FormularioCredencial --> GeneradorContrasenaControl : <<extend>> genera contraseña (opcional, UC-06)
+UsuarioFinal --> FormularioCredencial : asigna categorías/etiquetas y guarda
+
+FormularioCredencial --> AgregarCredencialControl : solicita guardar credencial
+
+AgregarCredencialControl --> Sesion : obtiene llave de sesión activa
+AgregarCredencialControl --> AgregarCredencialControl : empaqueta JSON y cifra AES-256-GCM
+AgregarCredencialControl --> Credencial : persiste blob cifrado (HTTPS POST)
+
+AgregarCredencialControl --> FormularioCredencial : confirma guardado / error de red
+FormularioCredencial --> UsuarioFinal : muestra confirmación
+@enduml

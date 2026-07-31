@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Bóveda{% endblock %}
+{% block content %}
+<div class="vault-page">
+  <div class="vault-header">
+    <div>
+      <h2>Mi Bóveda</h2>
+      <p class="subtitle">Gestiona tus credenciales seguras en un solo lugar.</p>
+    </div>
+    <a href="{% url 'vault:add_credential' %}" class="button secondary">+ Nueva credencial</a>
+  </div>
+  <div class="cards-grid">
+    {% for credential in credentials %}
+    <article class="card credential-card">
+      <div class="card-header">
+        <div class="service-icon"><i class="fa-solid fa-lock"></i></div>
+        <div>
+          <h3>{{ credential.service_name }}</h3>
+          <p class="category">{{ credential.get_category_display }}</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">Usuario</span>
+          <span>{{ credential.username }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Sitio</span>
+          <a href="{{ credential.url }}" target="_blank" rel="noreferrer">{{ credential.url|default:'-' }}</a>
+        </div>
+        <div class="info-row password-section">
+          <span class="info-label">Contraseña</span>
+          <div class="password-controls">
+            <input type="password" value="{{ credential.password }}" readonly class="password-field" />
+            <button type="button" class="button tertiary toggle-password">Ver</button>
+            <button type="button" class="button secondary copy-button" data-password="{{ credential.password }}">Copiar</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="{% url 'vault:edit_credential' credential.pk %}" class="button tertiary">Editar</a>
+        <form method="post" action="{% url 'vault:delete_credential' credential.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="button danger">Eliminar</button>
+        </form>
+      </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+      <h3>No hay credenciales todavía</h3>
+      <p>Agrega tu primera credencial para empezar a proteger tus accesos.</p>
+      <a href="{% url 'vault:add_credential' %}" class="button primary">Agregar Credencial</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

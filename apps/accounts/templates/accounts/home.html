@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}PassSafe{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Tus contraseñas. Seguras. Siempre.</h1>
+    <p class="subtitle">Genera, almacena y accede a tus credenciales desde cualquier dispositivo con cifrado de punto a punto.</p>
+    <div class="action-row">
+      <a href="{% url 'accounts:register' %}" class="button primary">Crear Cuenta</a>
+      <a href="{% url 'accounts:login' %}" class="button secondary">Iniciar Sesión</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

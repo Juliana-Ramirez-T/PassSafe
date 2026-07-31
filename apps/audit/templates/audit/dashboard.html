@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Auditoría de Seguridad{% endblock %}
+{% block content %}
+<div class="audit-page">
+  <div class="audit-header">
+    <div>
+      <h1>Auditoría de Seguridad</h1>
+      <p class="subtitle">Analiza la fortaleza de tus credenciales y recibe recomendaciones para mejorar tu seguridad.</p>
+    </div>
+    <div class="score-card">
+      <span class="score-label">Puntuación Global</span>
+      <strong class="score-value">{{ score }}%</strong>
+      <div class="score-meter">
+        <div class="score-fill" style="width: {{ score }}%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="audit-summary-grid">
+    <article class="metric-card success">
+      <div class="metric-icon"><i class="fa-solid fa-check-circle"></i></div>
+      <h3>{{ total }}</h3>
+      <p>Credenciales totales</p>
+    </article>
+    <article class="metric-card warning">
+      <div class="metric-icon"><i class="fa-solid fa-exclamation-triangle"></i></div>
+      <h3>{{ weak_count }}</h3>
+      <p>Contraseñas débiles</p>
+    </article>
+    <article class="metric-card danger">
+      <div class="metric-icon"><i class="fa-solid fa-repeat"></i></div>
+      <h3>{{ reused_count }}</h3>
+      <p>Contraseñas reutilizadas</p>
+    </article>
+  </div>
+
+  <div class="audit-details-grid">
+    <section class="audit-card audit-list-card">
+      <h2>Contraseñas débiles</h2>
+      {% if weak_list %}
+      <ul class="audit-list">
+        {% for credential in weak_list %}
+        <li>
+          <div>
+            <strong>{{ credential.service_name }}</strong>
+            <span>{{ credential.username }}</span>
+          </div>
+          <span>{{ credential.password|length }} caracteres</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-text">No se encontraron contraseñas débiles.</p>
+      {% endif %}
+    </section>
+
+    <section class="audit-card audit-list-card">
+      <h2>Contraseñas reutilizadas</h2>
+      {% if reused_list %}
+      <ul class="audit-list">
+        {% for credential in reused_list %}
+        <li>
+          <div>
+            <strong>{{ credential.service_name }}</strong>
+            <span>{{ credential.username }}</span>
+          </div>
+          <span>Reutilizada</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-text">Ninguna contraseña parece reutilizada.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="audit-card recommendations-card">
+    <h2>Recomendaciones</h2>
+    {% if recommendations %}
+    <ul class="recommendations-list">
+      {% for item in recommendations %}
+      <li><i class="fa-solid fa-lightbulb"></i>{{ item }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-text">Tu bóveda se ve segura por ahora. Mantén buenas prácticas.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

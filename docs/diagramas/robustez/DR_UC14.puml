@@ -1,0 +1,24 @@
+@startuml UC08_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary VistaCredencial
+control VisualizarCredencialControl
+entity Credencial
+entity Sesion
+
+UsuarioFinal --> VistaCredencial : selecciona credencial
+VistaCredencial --> VisualizarCredencialControl : solicita datos
+
+VisualizarCredencialControl --> Credencial : extrae blob cifrado local
+VisualizarCredencialControl --> Sesion : obtiene llave activa en RAM
+VisualizarCredencialControl --> VisualizarCredencialControl : descifra en memoria
+
+VisualizarCredencialControl --> VistaCredencial : retorna usuario visible / clave oculta
+VistaCredencial --> UsuarioFinal : muestra usuario, clave enmascarada
+
+UsuarioFinal --> VistaCredencial : pulsa "ojo" o "copiar"
+VistaCredencial --> VisualizarCredencialControl : solicita revelar/copiar (posible re-auth)
+VisualizarCredencialControl --> VistaCredencial : entrega clave / copia al portapapeles
+VistaCredencial --> UsuarioFinal : revela clave o confirma copiado
+@enduml

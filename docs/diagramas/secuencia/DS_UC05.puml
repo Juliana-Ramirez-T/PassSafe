@@ -1,0 +1,46 @@
+@startuml UC12_Secuencia
+actor UsuarioFinal
+boundary IndicadorSincronizacion
+control SincronizacionControl
+entity DeltaSincronizacion
+entity Credencial
+
+alt sincronización automática (cambio local o push/WebSocket)
+    SincronizacionControl -> SincronizacionControl : compararTimestampLocalVsServidor()
+else sincronización manual (A1)
+    UsuarioFinal -> IndicadorSincronizacion : arrastrarParaRefrescar()
+    activate IndicadorSincronizacion
+    IndicadorSincronizacion -> SincronizacionControl : forzarSincronizacion()
+end
+activate SincronizacionControl
+
+SincronizacionControl -> DeltaSincronizacion : hayActualizacionesPendientes()
+activate DeltaSincronizacion
+DeltaSincronizacion --> SincronizacionControl : booleano
+
+opt hay actualizaciones pendientes
+    SincronizacionControl -> DeltaSincronizacion : descargarBlobsModificados()
+    DeltaSincronizacion --> SincronizacionControl : deltasCifrados
+    deactivate DeltaSincronizacion
+
+    SincronizacionControl -> SincronizacionControl : descifrarEIntegrar(deltasCifrados)
+
+    SincronizacionControl -> Credencial : actualizarRegistrosLocales(deltasDescifrados)
+    activate Credencial
+
+    alt conflicto de datos (E1)
+        Credencial --> SincronizacionControl : conflictoDetectado(timestamps)
+        SincronizacionControl -> SincronizacionControl : priorizarFechaMasReciente()
+        SincronizacionControl --> IndicadorSincronizacion : alertarConflicto()
+    else sin conflicto
+        Credencial --> SincronizacionControl : registrosActualizados
+    end
+    deactivate Credencial
+
+    SincronizacionControl --> IndicadorSincronizacion : sincronizacionCompletada()
+    IndicadorSincronizacion --> UsuarioFinal : refresca interfaz de forma transparente
+end
+
+deactivate SincronizacionControl
+deactivate IndicadorSincronizacion
+@enduml

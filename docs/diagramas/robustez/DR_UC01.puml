@@ -1,0 +1,23 @@
+@startuml UC12_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary IndicadorSincronizacion
+control SincronizacionControl
+entity DeltaSincronizacion
+entity Credencial
+
+' Disparador automático (cambio local guardado o push del servidor)
+UsuarioFinal --> IndicadorSincronizacion : arrastra para refrescar (A1, manual)
+IndicadorSincronizacion --> SincronizacionControl : solicita sincronización
+
+SincronizacionControl --> SincronizacionControl : compara timestamp local vs servidor
+SincronizacionControl --> DeltaSincronizacion : detecta actualizaciones pendientes
+SincronizacionControl --> DeltaSincronizacion : descarga blobs modificados
+
+SincronizacionControl --> SincronizacionControl : descifra e integra cambios
+SincronizacionControl --> Credencial : actualiza registros locales
+
+SincronizacionControl --> IndicadorSincronizacion : confirma sincronización / alerta de conflicto
+IndicadorSincronizacion --> UsuarioFinal : refresca interfaz de forma transparente
+@enduml

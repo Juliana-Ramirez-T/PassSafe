@@ -1,0 +1,67 @@
+@startuml UC01_Secuencia
+actor UsuarioFinal
+boundary FormularioRegistro
+control RegistroControl
+entity Usuario
+entity KitEmergencia
+entity Sesion
+boundary GatewayCorreo
+
+UsuarioFinal -> FormularioRegistro : ingresarDatos(correo, claveMaestra)
+activate FormularioRegistro
+FormularioRegistro -> RegistroControl : registrar(correo, claveMaestra)
+activate RegistroControl
+
+RegistroControl -> RegistroControl : validarRobustezLocal(claveMaestra)
+alt clave insegura (E1)
+    RegistroControl --> FormularioRegistro : errorPoliticaEntropia()
+    FormularioRegistro --> UsuarioFinal : muestra error, bloquea registro
+else clave válida
+    RegistroControl -> Usuario : existeCorreo(correo)
+    activate Usuario
+    Usuario --> RegistroControl : booleano
+    deactivate Usuario
+
+    alt correo ya existe (A1)
+        RegistroControl --> FormularioRegistro : correoDuplicado()
+        FormularioRegistro --> UsuarioFinal : notifica y redirige a login
+    else correo disponible
+        RegistroControl -> RegistroControl : derivarHashPBKDF2(claveMaestra)
+        RegistroControl -> Usuario : crear(correo, hashAutenticacion)
+        activate Usuario
+        Usuario --> RegistroControl : usuarioCreado
+        deactivate Usuario
+
+        RegistroControl -> KitEmergencia : generar(usuarioId)
+        activate KitEmergencia
+        KitEmergencia --> RegistroControl : claveRecuperacion256
+        deactivate KitEmergencia
+
+        RegistroControl -> Sesion : abrir(usuarioId)
+        activate Sesion
+        Sesion --> RegistroControl : sesionActiva
+        deactivate Sesion
+
+        RegistroControl -> GatewayCorreo : enviarBienvenida(correo)
+        activate GatewayCorreo
+        GatewayCorreo --> RegistroControl : envioConfirmado
+        deactivate GatewayCorreo
+
+        RegistroControl --> FormularioRegistro : registroExitoso(claveRecuperacion256)
+        FormularioRegistro --> UsuarioFinal : fuerza descarga del Kit de Emergencia
+    end
+end
+
+deactivate RegistroControl
+deactivate FormularioRegistro
+@enduml
+
+
+
+
+
+
+
+
+
+

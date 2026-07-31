@@ -1,0 +1,30 @@
+@startuml UC14_Secuencia
+actor Administrador
+boundary PanelAuditoria
+control AuditoriaControl
+entity LogAuditoria
+
+Administrador -> PanelAuditoria : parametrizarFiltros(rangoFechas, tipoEvento)
+activate PanelAuditoria
+PanelAuditoria -> AuditoriaControl : consultarAuditoria(rangoFechas, tipoEvento)
+activate AuditoriaControl
+
+AuditoriaControl -> LogAuditoria : consultarSoloLectura(rangoFechas, tipoEvento)
+activate LogAuditoria
+
+alt falla de conectividad con el clúster de logs (E1)
+    LogAuditoria --> AuditoriaControl : errorConectividad
+    AuditoriaControl --> PanelAuditoria : indisponibilidadTemporal()
+    PanelAuditoria --> Administrador : muestra mensaje de indisponibilidad
+else consulta exitosa
+    LogAuditoria --> AuditoriaControl : registrosEncontrados
+    deactivate LogAuditoria
+
+    AuditoriaControl -> AuditoriaControl : ordenarCronologicamente(registrosEncontrados)
+    AuditoriaControl --> PanelAuditoria : reporte(registrosOrdenados)
+    PanelAuditoria --> Administrador : presenta registros estructurados y filtrables
+end
+
+deactivate AuditoriaControl
+deactivate PanelAuditoria
+@enduml

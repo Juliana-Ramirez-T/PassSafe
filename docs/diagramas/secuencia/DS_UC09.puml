@@ -1,0 +1,31 @@
+@startuml UC15_Secuencia
+actor Administrador
+boundary PanelConfigSeguridad
+control ConfiguracionPoliticasControl
+entity PoliticaCifrado
+
+Administrador -> PanelConfigSeguridad : definirNuevasIteraciones(iteracionesNuevas)
+activate PanelConfigSeguridad
+PanelConfigSeguridad -> ConfiguracionPoliticasControl : actualizarPolitica(iteracionesNuevas)
+activate ConfiguracionPoliticasControl
+
+ConfiguracionPoliticasControl -> ConfiguracionPoliticasControl : notificarCambioPrevio(iteracionesNuevas)
+
+ConfiguracionPoliticasControl -> PoliticaCifrado : guardarDirectivaGlobal(iteracionesNuevas)
+activate PoliticaCifrado
+PoliticaCifrado --> ConfiguracionPoliticasControl : directivaGuardada
+deactivate PoliticaCifrado
+
+ConfiguracionPoliticasControl --> PanelConfigSeguridad : actualizacionConfirmada()
+PanelConfigSeguridad --> Administrador : muestra confirmación
+
+deactivate ConfiguracionPoliticasControl
+deactivate PanelConfigSeguridad
+
+note over PoliticaCifrado
+  En el siguiente login (UC-02), cada cliente
+  lee la directiva vigente y re-calcula
+  automáticamente su hash local para migrar
+  al nuevo estándar de iteraciones.
+end note
+@enduml

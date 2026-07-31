@@ -1,0 +1,21 @@
+@startuml UC10_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary VistaPapelera
+control EliminarCredencialControl
+entity Credencial
+
+UsuarioFinal --> VistaPapelera : confirma eliminación del elemento
+VistaPapelera --> EliminarCredencialControl : solicita borrado suave
+
+EliminarCredencialControl --> Credencial : cambia flag de estado a "Deleted" (cifrado)
+Credencial --> EliminarCredencialControl : confirma movimiento a papelera
+
+UsuarioFinal --> VistaPapelera : vacía papelera (A1, hard delete)
+VistaPapelera --> EliminarCredencialControl : solicita borrado físico
+EliminarCredencialControl --> Credencial : elimina físicamente el registro
+
+EliminarCredencialControl --> VistaPapelera : confirma resultado
+VistaPapelera --> UsuarioFinal : muestra confirmación
+@enduml

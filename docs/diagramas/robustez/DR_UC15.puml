@@ -1,0 +1,27 @@
+@startuml UC05_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary FormularioRecuperacion
+control RecuperacionAccesoControl
+entity KitEmergencia
+entity Usuario as UsuarioEntity
+entity Credencial
+
+UsuarioFinal --> FormularioRecuperacion : ingresa correo y clave de recuperación
+FormularioRecuperacion --> RecuperacionAccesoControl : solicita recuperación
+
+RecuperacionAccesoControl --> KitEmergencia : valida integridad de la clave (local)
+RecuperacionAccesoControl --> FormularioRecuperacion : solicita nueva contraseña maestra
+FormularioRecuperacion --> UsuarioFinal : pide nueva clave maestra
+UsuarioFinal --> FormularioRecuperacion : define nueva contraseña maestra
+
+RecuperacionAccesoControl --> Credencial : descarga blob cifrado antiguo
+RecuperacionAccesoControl --> RecuperacionAccesoControl : descifra con clave de recuperación
+RecuperacionAccesoControl --> RecuperacionAccesoControl : re-cifra con nueva llave derivada
+RecuperacionAccesoControl --> Credencial : sube bóveda re-cifrada
+RecuperacionAccesoControl --> UsuarioEntity : actualiza hash de autenticación
+
+RecuperacionAccesoControl --> FormularioRecuperacion : confirma restablecimiento
+FormularioRecuperacion --> UsuarioFinal : notifica éxito / acceso denegado
+@enduml

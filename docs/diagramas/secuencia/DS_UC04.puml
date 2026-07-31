@@ -1,0 +1,63 @@
+@startuml UC11_Secuencia
+actor UsuarioFinal
+boundary PanelCategoriasEtiquetas
+control CategoriaEtiquetaControl
+entity Categoria
+entity Etiqueta
+entity Credencial
+
+UsuarioFinal -> PanelCategoriasEtiquetas : crearCategoriaOEtiqueta(nombre, tipo)
+activate PanelCategoriasEtiquetas
+PanelCategoriasEtiquetas -> CategoriaEtiquetaControl : procesarCreacion(nombre, tipo)
+activate CategoriaEtiquetaControl
+
+CategoriaEtiquetaControl -> CategoriaEtiquetaControl : cifrarNombre(nombre)
+
+alt tipo = Categoria
+    CategoriaEtiquetaControl -> Categoria : crear(nombreCifrado)
+    activate Categoria
+    Categoria --> CategoriaEtiquetaControl : categoriaCreada(id)
+    deactivate Categoria
+else tipo = Etiqueta
+    CategoriaEtiquetaControl -> Etiqueta : crear(nombreCifrado)
+    activate Etiqueta
+    Etiqueta --> CategoriaEtiquetaControl : etiquetaCreada(id)
+    deactivate Etiqueta
+end
+
+CategoriaEtiquetaControl -> Credencial : vincularId(credencialId, categoriaOEtiquetaId)
+activate Credencial
+Credencial --> CategoriaEtiquetaControl : vinculacionExitosa
+deactivate Credencial
+
+CategoriaEtiquetaControl --> PanelCategoriasEtiquetas : creacionCompletada()
+PanelCategoriasEtiquetas --> UsuarioFinal : muestra estructura actualizada
+deactivate CategoriaEtiquetaControl
+
+opt eliminación de categoría con ítems asociados (E1)
+    UsuarioFinal -> PanelCategoriasEtiquetas : eliminarCategoria(id)
+    PanelCategoriasEtiquetas -> CategoriaEtiquetaControl : procesarEliminacion(id)
+    activate CategoriaEtiquetaControl
+    CategoriaEtiquetaControl -> Credencial : tieneItemsAsociados(id)
+    activate Credencial
+    Credencial --> CategoriaEtiquetaControl : booleano
+    deactivate Credencial
+    CategoriaEtiquetaControl --> PanelCategoriasEtiquetas : preguntarReubicarODesvincular()
+    PanelCategoriasEtiquetas --> UsuarioFinal : solicita decisión
+    UsuarioFinal -> PanelCategoriasEtiquetas : decision(reubicar/desvincular)
+    PanelCategoriasEtiquetas -> CategoriaEtiquetaControl : aplicarDecision(decision)
+    CategoriaEtiquetaControl -> Credencial : actualizarVinculos(decision)
+    activate Credencial
+    Credencial --> CategoriaEtiquetaControl : vinculosActualizados
+    deactivate Credencial
+    CategoriaEtiquetaControl -> Categoria : eliminar(id)
+    activate Categoria
+    Categoria --> CategoriaEtiquetaControl : categoriaEliminada
+    deactivate Categoria
+    CategoriaEtiquetaControl --> PanelCategoriasEtiquetas : eliminacionCompletada()
+    PanelCategoriasEtiquetas --> UsuarioFinal : muestra estructura actualizada
+    deactivate CategoriaEtiquetaControl
+end
+
+deactivate PanelCategoriasEtiquetas
+@enduml

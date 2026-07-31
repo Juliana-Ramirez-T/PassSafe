@@ -1,0 +1,42 @@
+@startuml UC10_Secuencia
+actor UsuarioFinal
+boundary VistaPapelera
+control EliminarCredencialControl
+entity Credencial
+
+UsuarioFinal -> VistaPapelera : confirmarEliminacion(id)
+activate VistaPapelera
+VistaPapelera -> EliminarCredencialControl : eliminarSuave(id)
+activate EliminarCredencialControl
+
+EliminarCredencialControl -> Credencial : cambiarEstado(id, "Deleted")
+activate Credencial
+Credencial --> EliminarCredencialControl : movidoAPapelera
+deactivate Credencial
+
+EliminarCredencialControl --> VistaPapelera : confirmacion(movidoAPapelera)
+VistaPapelera --> UsuarioFinal : muestra elemento en papelera
+deactivate EliminarCredencialControl
+
+opt vaciado de papelera (A1)
+    UsuarioFinal -> VistaPapelera : vaciarPapelera(id)
+    VistaPapelera -> EliminarCredencialControl : eliminarFisicamente(id)
+    activate EliminarCredencialControl
+    EliminarCredencialControl -> Credencial : hardDelete(id)
+    activate Credencial
+    Credencial --> EliminarCredencialControl : eliminadoDefinitivamente
+    deactivate Credencial
+    EliminarCredencialControl --> VistaPapelera : confirmacion(eliminadoDefinitivamente)
+    VistaPapelera --> UsuarioFinal : muestra confirmación final
+    deactivate EliminarCredencialControl
+end
+
+loop cada 24h (limpieza automática, regla de negocio)
+    EliminarCredencialControl -> Credencial : purgarSiSuperaTreintaDias()
+    activate Credencial
+    Credencial --> EliminarCredencialControl : registrosPurgados
+    deactivate Credencial
+end
+
+deactivate VistaPapelera
+@enduml

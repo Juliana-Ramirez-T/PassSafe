@@ -1,0 +1,22 @@
+@startuml UC06_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary PanelGeneradorContrasena
+control GeneradorContrasenaControl
+boundary InterfazMotorCifrado
+actor MotorCifrado
+
+UsuarioFinal --> PanelGeneradorContrasena : abre generador y ajusta parámetros
+PanelGeneradorContrasena --> GeneradorContrasenaControl : solicita generación (longitud, tipos)
+
+GeneradorContrasenaControl --> GeneradorContrasenaControl : valida longitud mínima (16)
+GeneradorContrasenaControl --> InterfazMotorCifrado : invoca CSPRNG nativo
+InterfazMotorCifrado --> MotorCifrado : delega generación aleatoria segura
+MotorCifrado --> InterfazMotorCifrado : bytes aleatorios
+InterfazMotorCifrado --> GeneradorContrasenaControl : cadena aleatoria
+
+GeneradorContrasenaControl --> GeneradorContrasenaControl : calcula nivel de seguridad
+GeneradorContrasenaControl --> PanelGeneradorContrasena : retorna contraseña/frase generada
+PanelGeneradorContrasena --> UsuarioFinal : muestra resultado y nivel de seguridad
+@enduml

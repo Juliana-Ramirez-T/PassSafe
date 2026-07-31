@@ -1,0 +1,26 @@
+@startuml UC13_Robustez
+left to right direction
+actor Administrador
+
+boundary PanelGestionUsuarios
+control GestionUsuariosControl
+entity Usuario as UsuarioEntity
+entity Sesion
+
+Administrador --> PanelGestionUsuarios : busca usuario por ID o correo
+PanelGestionUsuarios --> GestionUsuariosControl : solicita búsqueda
+GestionUsuariosControl --> UsuarioEntity : consulta usuario
+UsuarioEntity --> GestionUsuariosControl : datos del usuario
+GestionUsuariosControl --> PanelGestionUsuarios : muestra resultado
+PanelGestionUsuarios --> Administrador : despliega usuario encontrado
+
+Administrador --> PanelGestionUsuarios : selecciona "Suspender cuenta"
+PanelGestionUsuarios --> GestionUsuariosControl : solicita suspensión
+
+GestionUsuariosControl --> GestionUsuariosControl : valida que no sea auto-suspensión (E1)
+GestionUsuariosControl --> UsuarioEntity : actualiza estado a "Suspendido"
+GestionUsuariosControl --> Sesion : revoca todos los tokens JWT activos
+
+GestionUsuariosControl --> PanelGestionUsuarios : confirma acción
+PanelGestionUsuarios --> Administrador : muestra confirmación / error de auto-suspensión
+@enduml

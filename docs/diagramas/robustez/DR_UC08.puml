@@ -1,0 +1,23 @@
+@startuml UC15_Robustez
+left to right direction
+actor Administrador
+
+boundary PanelConfigSeguridad
+control ConfiguracionPoliticasControl
+entity PoliticaCifrado
+
+Administrador --> PanelConfigSeguridad : incrementa iteraciones mínimas PBKDF2
+PanelConfigSeguridad --> ConfiguracionPoliticasControl : solicita actualización de política
+
+ConfiguracionPoliticasControl --> ConfiguracionPoliticasControl : notifica previamente el cambio (regla de negocio)
+ConfiguracionPoliticasControl --> PoliticaCifrado : guarda nueva directiva global
+
+ConfiguracionPoliticasControl --> PanelConfigSeguridad : confirma actualización
+PanelConfigSeguridad --> Administrador : muestra confirmación
+
+note right of PoliticaCifrado
+  Los clientes leerán la directiva
+  y recalcularán sus hashes locales
+  en su siguiente inicio de sesión (UC-02)
+end note
+@enduml

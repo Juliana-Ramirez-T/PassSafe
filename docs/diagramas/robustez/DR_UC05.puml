@@ -1,0 +1,26 @@
+@startuml UC11_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary PanelCategoriasEtiquetas
+control CategoriaEtiquetaControl
+entity Categoria
+entity Etiqueta
+entity Credencial
+
+UsuarioFinal --> PanelCategoriasEtiquetas : crea/edita categoría o etiqueta
+PanelCategoriasEtiquetas --> CategoriaEtiquetaControl : solicita creación/edición
+
+CategoriaEtiquetaControl --> CategoriaEtiquetaControl : cifra nombre de categoría/etiqueta
+CategoriaEtiquetaControl --> Categoria : persiste categoría cifrada
+CategoriaEtiquetaControl --> Etiqueta : persiste etiqueta cifrada
+CategoriaEtiquetaControl --> Credencial : vincula ID de credencial con ID de categoría
+
+UsuarioFinal --> PanelCategoriasEtiquetas : elimina categoría con ítems (E1)
+PanelCategoriasEtiquetas --> CategoriaEtiquetaControl : solicita eliminación
+CategoriaEtiquetaControl --> PanelCategoriasEtiquetas : pregunta reubicar o desvincular
+PanelCategoriasEtiquetas --> UsuarioFinal : solicita decisión
+
+CategoriaEtiquetaControl --> PanelCategoriasEtiquetas : confirma actualización
+PanelCategoriasEtiquetas --> UsuarioFinal : muestra estructura actualizada
+@enduml

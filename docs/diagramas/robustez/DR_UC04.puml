@@ -1,0 +1,18 @@
+@startuml UC14_Robustez
+left to right direction
+actor Administrador
+
+boundary PanelAuditoria
+control AuditoriaControl
+entity LogAuditoria
+
+Administrador --> PanelAuditoria : parametriza filtros (fechas, tipo de evento)
+PanelAuditoria --> AuditoriaControl : solicita consulta de auditoría
+
+AuditoriaControl --> LogAuditoria : consulta de solo lectura (Append-Only)
+LogAuditoria --> AuditoriaControl : registros encontrados
+AuditoriaControl --> AuditoriaControl : ordena cronológicamente
+
+AuditoriaControl --> PanelAuditoria : retorna reporte / mensaje de indisponibilidad
+PanelAuditoria --> Administrador : presenta registros estructurados
+@enduml

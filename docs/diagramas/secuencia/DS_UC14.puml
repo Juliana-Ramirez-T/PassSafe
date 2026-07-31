@@ -1,0 +1,51 @@
+@startuml UC07_Secuencia
+actor UsuarioFinal
+boundary FormularioCredencial
+control GeneradorContrasenaControl
+control AgregarCredencialControl
+entity Sesion
+entity Credencial
+
+UsuarioFinal -> FormularioCredencial : completarCampos(titulo, url, usuario)
+activate FormularioCredencial
+
+opt usa generador de contraseñas (extend UC-06)
+    FormularioCredencial -> GeneradorContrasenaControl : generar(longitud, tiposCaracteres)
+    activate GeneradorContrasenaControl
+    GeneradorContrasenaControl --> FormularioCredencial : contrasenaGenerada
+    deactivate GeneradorContrasenaControl
+end
+
+UsuarioFinal -> FormularioCredencial : asignarCategoriasEtiquetas(opcional)
+UsuarioFinal -> FormularioCredencial : guardar()
+
+FormularioCredencial -> AgregarCredencialControl : agregarCredencial(datosCredencial)
+activate AgregarCredencialControl
+
+AgregarCredencialControl -> Sesion : obtenerLlaveSesion()
+activate Sesion
+Sesion --> AgregarCredencialControl : llaveActiva
+deactivate Sesion
+
+AgregarCredencialControl -> AgregarCredencialControl : empaquetarJSON(datosCredencial)
+AgregarCredencialControl -> AgregarCredencialControl : cifrarAES256GCM(json, llaveActiva)
+
+AgregarCredencialControl -> Credencial : guardar(blobCifrado)
+activate Credencial
+alt error de red (E1)
+    Credencial --> AgregarCredencialControl : sinConexion
+    AgregarCredencialControl -> Credencial : guardarEnIndexDBLocalCifrada(blobCifrado)
+    Credencial --> AgregarCredencialControl : guardadoLocalPendiente
+else envío exitoso
+    Credencial --> AgregarCredencialControl : credencialPersistida
+end
+deactivate Credencial
+
+AgregarCredencialControl --> FormularioCredencial : resultado(guardadoOk)
+FormularioCredencial --> UsuarioFinal : muestra confirmación de guardado
+
+deactivate AgregarCredencialControl
+deactivate FormularioCredencial
+@enduml
+
+

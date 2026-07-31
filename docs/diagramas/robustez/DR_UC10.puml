@@ -1,0 +1,17 @@
+@startuml UC04_Robustez
+left to right direction
+actor Usuario
+
+boundary BotonCerrarSesion
+control CierreSesionControl
+entity Sesion
+
+Usuario --> BotonCerrarSesion : solicita cerrar sesión
+BotonCerrarSesion --> CierreSesionControl : notifica solicitud de salida
+
+CierreSesionControl --> Sesion : ejecuta zero-fill de la llave simétrica
+CierreSesionControl --> Sesion : invalida el token JWT en el servidor
+
+CierreSesionControl --> BotonCerrarSesion : confirma cierre
+BotonCerrarSesion --> Usuario : redirige a pantalla de login
+@enduml

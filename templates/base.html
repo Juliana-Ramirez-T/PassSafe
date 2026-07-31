@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PassSafe{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    {% if user.is_authenticated %}
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div>
+          <h1>PassSafe</h1>
+          <span>Secure Workspace</span>
+        </div>
+      </div>
+      <nav class="menu">
+        <a href="{% url 'vault:dashboard' %}" class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="{% url 'vault:dashboard' %}" class="menu-item"><i class="fa-solid fa-lock"></i> All Passwords</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-star"></i> Favorites</a>
+        <a href="{% url 'audit:dashboard' %}" class="menu-item"><i class="fa-solid fa-shield-check"></i> Security Audit</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="{% url 'accounts:logout' %}" class="menu-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </div>
+    </aside>
+    {% endif %}
+    <main class="main-content{% if not user.is_authenticated %} full-width{% endif %}">
+      {% if user.is_authenticated %}
+      <header class="topbar">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" placeholder="Buscar contraseñas...">
+        </div>
+        <div class="user-welcome">Hola, {{ request.user.username }}</div>
+        <div class="top-actions">
+          <a href="{% url 'generator:generate' %}" class="button secondary">Generator</a>
+          <a href="{% url 'vault:add_credential' %}" class="button primary">Add New</a>
+        </div>
+      </header>
+      {% endif %}
+      <section class="page-content">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="alert {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+</body>
+</html>

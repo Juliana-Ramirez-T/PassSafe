@@ -1,0 +1,41 @@
+@startuml UC03_Secuencia
+control LoginControl as "LoginControl (invocante, UC-02)"
+control ValidacionCredencialesControl
+entity Usuario as UsuarioEntity
+boundary InterfazMotorCifrado
+actor MotorCifrado
+
+LoginControl -> ValidacionCredencialesControl : validar(correo, hashAutenticacion)
+activate ValidacionCredencialesControl
+
+ValidacionCredencialesControl -> UsuarioEntity : obtenerHashControl(correo)
+activate UsuarioEntity
+UsuarioEntity --> ValidacionCredencialesControl : hashControlAlmacenado
+deactivate UsuarioEntity
+
+ValidacionCredencialesControl -> InterfazMotorCifrado : compararTiempoConstante(hashAutenticacion, hashControlAlmacenado)
+activate InterfazMotorCifrado
+InterfazMotorCifrado -> MotorCifrado : ejecutarComparacionSegura(...)
+activate MotorCifrado
+MotorCifrado --> InterfazMotorCifrado : coincide (booleano)
+deactivate MotorCifrado
+InterfazMotorCifrado --> ValidacionCredencialesControl : coincide (booleano)
+deactivate InterfazMotorCifrado
+
+alt error de comunicación con la DB (E1)
+    ValidacionCredencialesControl --> LoginControl : rechazado (fallo general por seguridad)
+else comparación completada
+    alt coincide = true
+        ValidacionCredencialesControl --> LoginControl : aprobado()
+    else coincide = false
+        ValidacionCredencialesControl --> LoginControl : rechazado()
+    end
+end
+
+deactivate ValidacionCredencialesControl
+@enduml
+
+
+
+
+

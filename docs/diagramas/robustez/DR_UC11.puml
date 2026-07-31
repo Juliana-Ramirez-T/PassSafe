@@ -1,0 +1,26 @@
+@startuml UC01_Robustez
+left to right direction
+actor UsuarioFinal
+
+boundary FormularioRegistro
+boundary GatewayCorreo
+control RegistroControl
+entity Usuario
+entity KitEmergencia
+entity Sesion
+
+UsuarioFinal --> FormularioRegistro : ingresa correo y clave maestra
+FormularioRegistro --> RegistroControl : solicita registro
+
+' El control valida localmente la robustez (E1) antes de tocar el servidor
+RegistroControl --> RegistroControl : valida robustez de clave (local)
+RegistroControl --> Usuario : verifica/crea registro (correo único, A1)
+RegistroControl --> Usuario : deriva y guarda hash PBKDF2
+RegistroControl --> KitEmergencia : genera clave de recuperación
+RegistroControl --> Sesion : abre sesión inicial
+RegistroControl --> GatewayCorreo : solicita correo de bienvenida
+GatewayCorreo --> RegistroControl : confirma envío
+
+RegistroControl --> FormularioRegistro : retorna resultado
+FormularioRegistro --> UsuarioFinal : fuerza descarga del kit / muestra error
+@enduml

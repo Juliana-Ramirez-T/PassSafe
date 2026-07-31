@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Iniciar Sesión</h1>
+    <p class="subtitle">Accede a tu bóveda segura.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="field">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {{ form.username.errors }}
+      </div>
+      <div class="field">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        {{ form.password.errors }}
+      </div>
+      <button class="button primary" type="submit">Iniciar Sesión</button>
+      <p class="small-text">¿No tienes cuenta? <a href="{% url 'accounts:register' %}">Crear cuenta</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}
