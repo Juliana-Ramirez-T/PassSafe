@@ -38,7 +38,10 @@
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="search" name="q" placeholder="Buscar contraseñas..." value="{{ request.GET.q|default_if_none:'' }}">
         </form>
-        <div class="user-welcome">Hola, {{ request.user.username }}</div>
+        <div class="user-welcome">
+          <div class="user-greeting">Hola,</div>
+          <div class="user-name">{{ request.user.username }}</div>
+        </div>
         <div class="top-actions">
           <a href="{% url 'generator:generate' %}" class="button secondary">Generator</a>
           <a href="{% url 'vault:add_credential' %}" class="button primary">Add New</a>

@@ -118,6 +118,37 @@ button {
   margin-bottom: 24px;
 }
 
+/* User welcome styling (modern, premium look) */
+.user-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 140px;
+}
+
+.user-welcome .user-greeting {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.user-welcome .user-name {
+  font-family: 'Inter', 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 1.15rem;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: linear-gradient(90deg, rgba(32,227,210,0.09), transparent 60%);
+  padding: 6px 10px;
+  border-radius: 10px;
+  color: var(--accent);
+}
+
+.user-welcome .user-name::first-letter {
+  text-transform: uppercase;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
