@@ -130,16 +130,6 @@ OK
 
 ---
 
-## Despliegue
-
-La aplicación está preparada para desplegarse en **PythonAnywhere** utilizando:
-
-* `gunicorn`,
-* `collectstatic`,
-* configuración WSGI de Django.
-
----
-
 ## Metodología
 
 El desarrollo se apoyó en **ICONIX Process**, utilizando:
@@ -152,7 +142,8 @@ El desarrollo se apoyó en **ICONIX Process**, utilizando:
 
 ---
 
-## Autora
+## Autores
 
 **Juliana Ramírez - Juan José Munera - Pedro Aristizabal**
+
 Ingeniería de Sistemas e Informática — Universidad Nacional de Colombia
