@@ -1,15 +1,25 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from .models import Credential, Category
 from .forms import CredentialForm
 
 
 @login_required
 def dashboard_view(request):
+    query = request.GET.get('q', '').strip()
     credentials = request.user.credentials.all()
+    if query:
+        credentials = credentials.filter(
+            Q(service_name__icontains=query) |
+            Q(username__icontains=query) |
+            Q(url__icontains=query) |
+            Q(category__icontains=query)
+        )
     return render(request, 'vault/dashboard.html', {
         'credentials': credentials,
+        'query': query,
     })
 
 

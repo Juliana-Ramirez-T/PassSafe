@@ -9,6 +9,7 @@
     </div>
     <a href="{% url 'vault:add_credential' %}" class="button secondary">+ Nueva credencial</a>
   </div>
+  {% if credentials.exists %}
   <div class="cards-grid">
     {% for credential in credentials %}
     <article class="card credential-card">
@@ -45,13 +46,20 @@
         </form>
       </div>
     </article>
-    {% empty %}
-    <div class="empty-state">
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    {% if query %}
+      <h3>No se encontraron credenciales para "{{ query }}"</h3>
+      <p>Revisa tu búsqueda o prueba con otro término.</p>
+      <a href="{% url 'vault:dashboard' %}" class="button secondary">Ver todas</a>
+    {% else %}
       <h3>No hay credenciales todavía</h3>
       <p>Agrega tu primera credencial para empezar a proteger tus accesos.</p>
       <a href="{% url 'vault:add_credential' %}" class="button primary">Agregar Credencial</a>
-    </div>
-    {% endfor %}
+    {% endif %}
   </div>
+  {% endif %}
 </div>
 {% endblock %}

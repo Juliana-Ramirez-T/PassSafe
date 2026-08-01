@@ -34,10 +34,10 @@
     <main class="main-content">
       {% if user.is_authenticated %}
       <header class="topbar">
-        <div class="search-bar">
+        <form class="search-bar" action="{% url 'vault:dashboard' %}" method="get">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="search" placeholder="Buscar contraseñas...">
-        </div>
+          <input type="search" name="q" placeholder="Buscar contraseñas..." value="{{ request.GET.q|default_if_none:'' }}">
+        </form>
         <div class="user-welcome">Hola, {{ request.user.username }}</div>
         <div class="top-actions">
           <a href="{% url 'generator:generate' %}" class="button secondary">Generator</a>
