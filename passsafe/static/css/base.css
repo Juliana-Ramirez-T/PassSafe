@@ -175,9 +175,16 @@ button {
 
 .button {
   border: none;
+  /* keep the visual size but ensure perfect centering */
   padding: 14px 20px;
   border-radius: 14px;
   transition: transform .2s ease, background .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1; /* prevent extra vertical offset */
+  vertical-align: middle;
 }
 
 .button:hover {
