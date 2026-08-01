@@ -1,45 +1,72 @@
 {% extends 'base.html' %}
-{% block title %}PassSafe{% endblock %}
+{% block title %}PassSafe — Seguridad de Contraseñas{% endblock %}
 {% block content %}
 <div class="home-hero">
-  <div class="hero-copy">
-    <span class="eyebrow">SEGURIDAD DE NIVEL BANCARIO</span>
-    <h1>Tus contraseñas. <span>Seguras.</span> Siempre.</h1>
-    <p>Genera, almacena y accede a tus credenciales desde cualquier dispositivo con cifrado de punto a punto. La bóveda digital que nunca descansa.</p>
+  <div class="hero-content">
+    <span class="hero-badge">SEGURIDAD DE NIVEL BANCARIO</span>
+    <h1>
+      Tus contraseñas.
+      <span>Seguras. Siempre.</span>
+    </h1>
+    <p class="hero-copy">
+      Controla y protege todas tus credenciales en una bóveda cifrada con acceso rápido desde cualquier dispositivo. Un espacio oscuro y moderno para mantener tus claves bajo control.
+    </p>
     <div class="hero-actions">
       <a href="{% url 'accounts:register' %}" class="button primary">Empezar Gratis</a>
       <a href="{% url 'accounts:login' %}" class="button secondary">Iniciar Sesión</a>
     </div>
+    <div class="hero-stats">
+      <div>
+        <strong>100+</strong>
+        <span>Contraseñas guardadas</span>
+      </div>
+      <div>
+        <strong>256</strong>
+        <span>bits de cifrado</span>
+      </div>
+    </div>
   </div>
-  <div class="hero-card">
-    <div class="hero-card-header">
-      <span>Mi Bóveda</span>
-      <div class="status-badge">2FA Habilitado</div>
-    </div>
-    <div class="hero-card-item">
-      <div>
-        <strong>Facebook</strong>
-        <p>user_secure_88</p>
+
+  <div class="hero-preview">
+    <div class="vault-card">
+      <div class="vault-card-head">
+        <div>
+          <p>Mi Bóveda</p>
+          <h2>Resumen rápido</h2>
+        </div>
+        <span class="vault-status">Activa</span>
       </div>
-      <span class="tag success">STRONG</span>
-    </div>
-    <div class="hero-card-item">
-      <div>
-        <strong>Work Database</strong>
-        <p>admin_vault</p>
+
+      <div class="vault-item">
+        <div>
+          <strong>Facebook</strong>
+          <p>usuario_seguro@gmail.com</p>
+        </div>
+        <span class="tag-success">STRONG</span>
       </div>
-      <span class="tag secondary">••••••••••</span>
-    </div>
-    <div class="hero-card-item">
-      <div>
-        <strong>Netflix</strong>
-        <p>family_stream</p>
+
+      <div class="vault-item">
+        <div>
+          <strong>Work Database</strong>
+          <p>admin_vault</p>
+        </div>
+        <span class="tag-warning">OK</span>
       </div>
-      <span class="tag danger">WEAK</span>
-    </div>
-    <div class="strength-meter">
-      <span>Fortaleza de Contraseña</span>
-      <div class="meter"><div style="width: 84%"></div></div>
+
+      <div class="vault-item">
+        <div>
+          <strong>Netflix</strong>
+          <p>family_stream</p>
+        </div>
+        <span class="tag-danger">WEAK</span>
+      </div>
+
+      <div class="strength-bar">
+        <div class="strength-fill" style="width: 84%;"></div>
+      </div>
+      <p class="strength-copy">
+        Fortaleza general de contraseñas: <strong>84%</strong>
+      </p>
     </div>
   </div>
 </div>

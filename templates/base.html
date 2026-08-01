@@ -23,16 +23,15 @@
       <nav class="menu">
         <a href="{% url 'vault:dashboard' %}" class="menu-item"><i class="fa-solid fa-house"></i> Dashboard</a>
         <a href="{% url 'vault:dashboard' %}" class="menu-item"><i class="fa-solid fa-lock"></i> All Passwords</a>
-        <a href="#" class="menu-item"><i class="fa-solid fa-star"></i> Favorites</a>
+        <a href="{% url 'generator:generate' %}" class="menu-item"><i class="fa-solid fa-key"></i> Password Generator</a>
         <a href="{% url 'audit:dashboard' %}" class="menu-item"><i class="fa-solid fa-shield-check"></i> Security Audit</a>
-        <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
       </nav>
       <div class="sidebar-footer">
         <a href="{% url 'accounts:logout' %}" class="menu-item"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
       </div>
     </aside>
     {% endif %}
-    <main class="main-content{% if not user.is_authenticated %} full-width{% endif %}">
+    <main class="main-content">
       {% if user.is_authenticated %}
       <header class="topbar">
         <div class="search-bar">
